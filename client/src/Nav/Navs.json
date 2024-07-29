@@ -1,0 +1,113 @@
+{
+  "LeftNav": [
+    {
+      "id": 0,
+      "label": "Finance",
+      "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Finance.png",
+      "in_navs": [
+        {
+          "id": 0,
+          "name": "Risk Management",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Risk%20Management.png",
+          "link": "/finance/risk-management"
+        },
+        {
+          "id": 1,
+          "name": "Control Management",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Control%20Management.png",
+          "link": "/finance/control-management"
+        },
+        {
+          "id": 2,
+          "name": "Issue Management",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Issue%20Management.png",
+          "link": "/finance/issue-management"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "label": "Continuous Monitoring",
+      "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Continuous%20Monitoring.png",
+      "in_navs": [
+        {
+          "id": 0,
+          "name": "Continuous Control Management",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Continuous%20Control%20Management.png",
+          "link": "/continuous-monitoring/continuous-control-management"
+        },
+        {
+          "id": 1,
+          "name": "Result Management",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Result%20Management.png",
+          "link": "/continuous-monitoring/result-management"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Tools",
+      "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Tools.png",
+      "in_navs": [
+        {
+          "id": 0,
+          "name": "Setup and Administration",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Setup%20and%20Administration.png",
+          "link": "/tools/setup-and-administration"
+        }
+      ]
+    }
+  ],
+  "TopNav": [
+    {
+      "id": 0,
+      "name": "Home",
+      "icon": "https://procg-poc-nepo.netlify.app/Top_Nav_Icon/Home.svg",
+      "link": "/"
+    },
+    {
+      "id": 1,
+      "name": "Alerts",
+      "icon": "https://procg-poc-nepo.netlify.app/Top_Nav_Icon/Alerts.svg",
+      "link": "/alerts"
+    },
+    {
+      "id": 2,
+      "name": "Tasks",
+      "icon": "https://procg-poc-nepo.netlify.app/Top_Nav_Icon/Tasks.svg",
+      "link": "/tasks"
+    },
+    {
+      "id": 3,
+      "name": "Notifications",
+      "icon": "https://procg-poc-nepo.netlify.app/Top_Nav_Icon/Notification.svg",
+      "link": "/notifications"
+    }
+  ],
+  "Profile": [
+    {
+      "id": 0,
+      "name": "Profile",
+      "icon": "fa-user",
+      "link": "/profile"
+    },
+    {
+      "id": 1,
+      "name": "Security",
+      "icon": "fa-shield-halved",
+      "link": "/security"
+    },
+    {
+      "id": 2,
+      "name": "Settings",
+      "icon": "fa-gear",
+      "link": "/settings"
+    },
+    {
+      "id": 3,
+      "name": "Logout",
+      "icon": "fa-right-from-bracket",
+      "link": "#"
+    }
+  ]
+}
