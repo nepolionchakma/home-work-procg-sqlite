@@ -11,7 +11,6 @@ exports.createTenant = async (req, res) => {
   const tenant = req.body;
   const result = await prisma.def_tenants.create({
     data: {
-      tenant_id: req.body.tenant_id,
       tenant_name: req.body.tenant_name,
     },
   });

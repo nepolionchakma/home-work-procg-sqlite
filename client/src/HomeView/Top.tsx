@@ -2,7 +2,7 @@ import TopNavBar from "../Nav/TopNavBar";
 
 const Top = () => {
   return (
-    <div className="fixed w-full z-10">
+    <div className="">
       <TopNavBar />
     </div>
   );

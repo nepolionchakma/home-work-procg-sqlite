@@ -14,7 +14,7 @@ const Root = () => {
     return (
       <main>
         {/* Home View  */}
-        <div className="flex flex-col  ">
+        <div className="flex flex-col">
           {/* Top  */}
           <Top />
           {/* Bottom  */}

@@ -106,7 +106,7 @@ const SideNav: React.FC = () => {
     <div
       ref={menuRef}
       className={`flex flex-col justify-between transition-all duration-500 bg-nav h-[92vh] ${
-        collapsed ? "w-[73px] " : "w-72 overflow-auto"
+        collapsed ? "w-[73px] " : "w-72 overflow-y-auto"
       }`}
     >
       <ul className=" ">

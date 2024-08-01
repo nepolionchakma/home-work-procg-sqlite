@@ -10,7 +10,6 @@ exports.createPerson = async (req, res) => {
   const person = req.body;
   const result = await prisma.def_persons.create({
     data: {
-      user_name: person.user_name,
       first_name: person.first_name,
       middle_name: person.middle_name,
       last_name: person.last_name,

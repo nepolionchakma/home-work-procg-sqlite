@@ -60,7 +60,7 @@ const TopNavBar: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-between px-5 py-2 border shadow-lg bg-nav sticky top-0 z-50">
+    <div className="flex justify-between px-5 py-2 border shadow bg-nav fixed w-full z-10 h-[45px]">
       {/* Left side  */}
       <div className="flex gap-4 items-center justify-center">
         <div

@@ -4,3 +4,9 @@
 - server (node, express, jsonwebtoken)
 
         yarn
+
+#### Run
+
+        yarn dev
+
+dnd created
