@@ -32,7 +32,7 @@ const User = (props: ISortableProps) => {
     if (index !== undefined) {
       const updatedItems = [...users];
       updatedItems[index] = { ...updatedItems[index], [field]: value };
-      setUsers((prev) => ({ ...prev, updatedItems }));
+      setUsers((prev) => ({ updatedItems, ...prev }));
     }
   };
 

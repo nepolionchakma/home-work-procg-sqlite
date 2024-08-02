@@ -120,42 +120,38 @@ const DND = () => {
         return updatedRight;
       });
 
-      setLeftEmptyWidget([
-        {
-          user_id: id,
-          user_name: String(id),
-          first_name: "",
-          middle_name: "",
-          last_name: "",
-          job_title: "",
-          user_type: "",
-          tenant_id: 1,
-          email_addresses: "",
-          created_by: "",
-          created_on: "",
-          last_update_by: "",
-          last_update_on: "",
-        },
-      ]);
+      if (leftEmptyWidget.length === 0) {
+        setLeftEmptyWidget([
+          {
+            user_id: id,
+            user_name: String(id),
+            first_name: "",
+            middle_name: "",
+            last_name: "",
+            job_title: "",
+            user_type: "",
+            tenant_id: 1,
+            email_addresses: "",
+            created_by: "",
+            created_on: "",
+            last_update_by: "",
+            last_update_on: "",
+          },
+        ]);
+      }
     } else if (activeContainer === "right" && overContainer === "left") {
       // Move item from users to leftEmptyWidget
-      setUsers((prev) => {
-        const updatedRight = [...prev];
-        updatedRight.splice(activeIndexInRight, 1);
-        return updatedRight;
-      });
-
-      setLeftEmptyWidget((prev) => {
-        const updatedLeft = [...prev];
-        updatedLeft.splice(newIndex, 0, users[activeIndexInRight]);
-        return updatedLeft;
-      });
+      // setUsers((prev) => {
+      //   const updatedRight = [...prev];
+      //   updatedRight.splice(activeIndexInRight, 1);
+      //   return updatedRight;
+      // });
+      // setLeftEmptyWidget((prev) => {
+      //   const updatedLeft = [...prev];
+      //   updatedLeft.splice(newIndex, 0, users[activeIndexInRight]);
+      //   return updatedLeft;
+      // });
     }
-  };
-
-  // Helper function to generate a unique ID (you can use any unique ID generator)
-  const generateUniqueId = () => {
-    return "_" + Math.random().toString(36).substr(2, 9);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {

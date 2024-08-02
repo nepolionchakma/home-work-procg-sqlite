@@ -5,6 +5,7 @@ import ManageUser from "@/components/ManageUser/ManageUser";
 import { DataTable } from "@/components/DataTable/DataTable";
 import DND1 from "@/components/DND/DND";
 import DND from "@/components/DND/Test/Test";
+import Test2 from "@/components/DND/Test2/Test2";
 // import { DND } from "@/components/DND/Test/Test";
 
 const Setup_and_Administration = () => {
@@ -19,6 +20,7 @@ const Setup_and_Administration = () => {
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="dnd">DND</TabsTrigger>
             <TabsTrigger value="dnd1">DND1</TabsTrigger>
+            <TabsTrigger value="dnd2">DND2</TabsTrigger>
             <TabsTrigger value="table">Table</TabsTrigger>
           </TabsList>
           <TabsContent value="add">
@@ -33,6 +35,9 @@ const Setup_and_Administration = () => {
           </TabsContent>
           <TabsContent value="dnd1">
             <DND1 />
+          </TabsContent>
+          <TabsContent value="dnd2">
+            <Test2 />
           </TabsContent>
           <TabsContent value="table">
             <DataTable />
