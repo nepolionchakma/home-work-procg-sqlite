@@ -11,9 +11,10 @@ const RightSide: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const { login, error, setError } = useSqliteAuthContext();
   const [checked, setChecked] = useState<boolean>(true);
-
+  console.log(email, password);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(email, password);
     try {
       if (!email) return setError("Field your email please");
       if (!password) return setError("Field your password please");

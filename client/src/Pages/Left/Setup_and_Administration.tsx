@@ -6,9 +6,16 @@ import { DataTable } from "@/components/DataTable/DataTable";
 import DND1 from "@/components/DND/DND";
 import DND from "@/components/DND/Test/Test";
 import Test2 from "@/components/DND/Test2/Test2";
+import { useEffect } from "react";
+import { useSqliteAuthContext } from "@/Context/SqliteContext";
 // import { DND } from "@/components/DND/Test/Test";
 
 const Setup_and_Administration = () => {
+  const { getusers } = useSqliteAuthContext();
+  useEffect(() => {
+    getusers();
+  }, []);
+
   return (
     <div>
       {/* <AddUser /> */}

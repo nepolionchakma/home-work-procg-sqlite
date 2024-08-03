@@ -5,16 +5,12 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-
-interface User {
-  user_id: number;
-  user_name: string;
-}
+import { IMergeUsersData } from "@/Context/SqliteContext";
 
 interface DroppableListProps {
   id: string;
-  items: User[];
-  setItems?: React.Dispatch<React.SetStateAction<User[]>>;
+  items: IMergeUsersData[];
+  setItems?: React.Dispatch<React.SetStateAction<IMergeUsersData[]>>;
 }
 
 const DroppableList: React.FC<DroppableListProps> = ({
@@ -43,7 +39,7 @@ const DroppableList: React.FC<DroppableListProps> = ({
 
 interface DroppableItemProps {
   id: string;
-  user: User;
+  user: IMergeUsersData;
 }
 
 export const DroppableItem: React.FC<DroppableItemProps> = ({ id, user }) => {
@@ -68,8 +64,17 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({ id, user }) => {
       style={style}
       {...attributes}
       {...listeners}
-      className="p-2 mb-2 bg-white border rounded shadow cursor-pointer"
+      className="p-2 mb-2 bg-slate-400 border rounded shadow cursor-pointer"
     >
+      <div className="flex flex-col w-[25%]">
+        <label htmlFor="">Job Title</label>
+        <input
+          className="px-2 rounded"
+          type="text"
+          value={user.job_title}
+          readOnly
+        />
+      </div>
       {user.user_name}
     </div>
   );

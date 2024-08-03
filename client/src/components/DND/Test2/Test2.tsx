@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -13,24 +13,59 @@ import { SortableContext, arrayMove, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import DraggableList from "./DraggableList";
 import DroppableList, { DroppableItem } from "./DroppableList";
+import { IMergeUsersData, useSqliteAuthContext } from "@/Context/SqliteContext";
 
-interface User {
-  user_id: number;
-  user_name: string;
-}
 const id = Math.floor(Math.random() * 1000 + 1);
-const initialLeft: User[] = [{ user_id: id, user_name: String(id) }];
-const initialRight: User[] = [
-  { user_id: 1, user_name: "b" },
-  { user_id: 2, user_name: "c" },
-  { user_id: 3, user_name: "d" },
-  { user_id: 4, user_name: "e" },
+const initialLeft: IMergeUsersData[] = [
+  {
+    user_id: id,
+    user_name: String(id),
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    job_title: "",
+    user_type: "",
+    tenant_id: 1,
+    email_addresses: "",
+    created_by: "",
+    created_on: "",
+    last_update_by: "",
+    last_update_on: "",
+  },
 ];
+// const initialRight: User[] = [
+//   { user_id: 1, user_name: "b" },
+//   { user_id: 2, user_name: "c" },
+//   { user_id: 3, user_name: "d" },
+//   { user_id: 4, user_name: "e" },
+// ];
 
 const App: React.FC = () => {
-  const [leftItems, setLeftItems] = useState<User[]>(initialLeft);
-  const [rightItems, setRightItems] = useState<User[]>(initialRight);
+  const { users_data } = useSqliteAuthContext();
+  // console.log(users_data);
+  const [leftItems, setLeftItems] = useState<IMergeUsersData[]>(initialLeft);
+  const [rightItems, setRightItems] = useState<IMergeUsersData[]>(users_data);
   const [activeId, setActiveId] = useState<number | null>(null);
+
+  if (leftItems.length === 0) {
+    const newId = Math.floor(Math.random() * 1000 + 1);
+    const newItem = {
+      user_id: newId,
+      user_name: String(newId),
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      job_title: "",
+      user_type: "",
+      tenant_id: 1,
+      email_addresses: "",
+      created_by: "",
+      created_on: "",
+      last_update_by: "",
+      last_update_on: "",
+    };
+    setLeftItems((prev) => [...prev, newItem]);
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -109,6 +144,17 @@ const App: React.FC = () => {
         const newItem = {
           user_id: newId,
           user_name: String(newId),
+          first_name: "",
+          middle_name: "",
+          last_name: "",
+          job_title: "",
+          user_type: "",
+          tenant_id: 1,
+          email_addresses: "",
+          created_by: "",
+          created_on: "",
+          last_update_by: "",
+          last_update_on: "",
         };
         setLeftItems((prev) => [...prev, newItem]);
 

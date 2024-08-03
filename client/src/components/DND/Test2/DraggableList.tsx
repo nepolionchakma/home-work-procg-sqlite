@@ -5,15 +5,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-interface User {
-  user_id: number;
-  user_name: string;
-}
+import { IMergeUsersData } from "@/Context/SqliteContext";
 
 interface DraggableListProps {
   id: string;
-  items: User[];
+  items: IMergeUsersData[];
 }
 
 const DraggableList: React.FC<DraggableListProps> = ({ id, items }) => {
@@ -38,7 +34,7 @@ const DraggableList: React.FC<DraggableListProps> = ({ id, items }) => {
 
 interface DraggableItemProps {
   id: string;
-  user: User;
+  user: IMergeUsersData;
 }
 
 const DraggableItem: React.FC<DraggableItemProps> = ({ id, user }) => {

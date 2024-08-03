@@ -1,13 +1,9 @@
 import React from "react";
 import { DragOverlay } from "@dnd-kit/core";
-
-interface User {
-  user_id: number;
-  user_name: string;
-}
+import { IMergeUsersData } from "@/Context/SqliteContext";
 
 interface DragOverlayComponentProps {
-  user: User;
+  user: IMergeUsersData;
 }
 
 const DragOverlayComponent: React.FC<DragOverlayComponentProps> = ({

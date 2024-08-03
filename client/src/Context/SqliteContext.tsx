@@ -179,7 +179,7 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
       // Make requests in parallel
       const [res_def_users, res_def_person, res_def_user_credentials] =
         await Promise.all([
-          axios.post("/api/v2/def-users", {
+          axios.post("http://localhost:5000/def-users", {
             user_name: user_name,
             user_type: user_type,
             email_addresses: email_addresses,
@@ -187,13 +187,13 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
             last_update_by: user?.user_id,
             tenant_id: Number(tenant_id),
           }),
-          axios.post("/api/v2/def-persons", {
+          axios.post("http://localhost:5000/def-persons", {
             first_name: first_name,
             middle_name: middle_name,
             last_name: last_name,
             job_title: job_title,
           }),
-          axios.post("/api/v2/def-user-credentials", {
+          axios.post("http://localhost:5000/def-user-credentials", {
             password: password,
           }),
         ]);
@@ -222,8 +222,8 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const getusers = async () => {
     try {
       const [resDefUsers, resDefPersons] = await Promise.all([
-        axios.get<IDefUsersType[]>("/api/v2/def-users"),
-        axios.get<IDefPersonsType[]>("/api/v2/def-persons"),
+        axios.get<IDefUsersType[]>("http://localhost:5000/def-users"),
+        axios.get<IDefPersonsType[]>("http://localhost:5000/def-persons"),
       ]);
 
       const users = resDefUsers.data;
@@ -255,9 +255,9 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const deleteUser = async (id: number) => {
     const [res_def_users, res_def_person, res_def_user_credentials] =
       await Promise.all([
-        axios.delete(`/api/v2/def-users/${id}`),
-        axios.delete(`/api/v2/def-persons/${id}`),
-        axios.delete(`/api/v2/def-user-credentials/${id}`),
+        axios.delete(`http://localhost:5000/def-users/${id}`),
+        axios.delete(`http://localhost:5000/def-persons/${id}`),
+        axios.delete(`http://localhost:5000/def-user-credentials/${id}`),
       ]);
     console.log(res_def_users, res_def_person, res_def_user_credentials);
     if (
@@ -273,8 +273,9 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const login = async (email: string, password: string) => {
     setError("");
     setIsLoading(true);
+    // console.log(email, password);
     try {
-      const res = await axios.post("/api/v2/login", {
+      const res = await axios.post("http://localhost:5000/login", {
         email,
         password,
       });
