@@ -108,10 +108,18 @@ exports.upserUsers = async (req, res) => {
 };
 exports.deleteUser = async (req, res) => {
   const user_id = req.params.user_id;
-  const result = await prisma.def_users.delete({
+  const findUser = await prisma.def_users.findUnique({
     where: {
       user_id: Number(user_id),
     },
   });
-  return res.json({ deleted: result, status: "success" });
+
+  if (findUser) {
+    const result = await prisma.def_users.delete({
+      where: {
+        user_id: Number(user_id),
+      },
+    });
+    return res.json({ deleted: result, status: "success" });
+  } else res.json({ msg: "User not found" });
 };

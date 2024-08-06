@@ -3,27 +3,46 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  plugins: [react()],
   server: {
+    port: 8000,
     proxy: {
       "/api/v2": {
-        target: "http://localhost:5000",
+        target: "http://192.168.43.235:3000/",
+        // target: "http://192.168.0.169:3000",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/v2/, ""),
-      },
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => {
+          const newPath = path.replace(/^\/api\/v2/, "");
+          console.log(`Rewriting path: ${path} -> ${newPath}`);
+          return newPath;
+        },
+        configure: (proxy, options) => {
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            console.log(
+              "Proxying request:",
+              req.method,
+              req.url,
+              "->",
+              proxyReq.path
+            );
+          });
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            console.log("Received response from target:", proxyRes.statusCode);
+          });
+          proxy.on("error", (err, req, res) => {
+            console.error("Proxy error:", err);
+            res.writeHead(500, {
+              "Content-Type": "text/plain",
+            });
+            res.end(
+              "Something went wrong. And we are reporting a custom error message."
+            );
+          });
+        },
       },
     },
   },
-  // server: {
-  //   proxy: {
-  //     "/api/v2/": "http://129.146.85.244:3000",
-  //   },
-  // },
 
-  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

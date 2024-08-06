@@ -18,7 +18,7 @@ exports.createTenant = async (req, res) => {
 };
 
 //Get Unique Tenant
-(exports.getUniqueTenant = async (req, res) => {
+exports.getUniqueTenant = async (req, res) => {
   const paramId = req.params.id;
   const result = await prisma.def_tenants.findUnique({
     where: {
@@ -26,52 +26,52 @@ exports.createTenant = async (req, res) => {
     },
   });
   return res.json(result);
-}),
-  // Update Tenant
-  (exports.updateTenant = async (req, res) => {
-    const { tenant_name } = req.body;
-    const paramId = req.params.tenant_id;
-    try {
-      // Check if tenant with given ID exists
-      const existingTenant = await prisma.def_tenants.findUnique({
-        where: { tenant_id: Number(paramId) },
-      });
+};
+// Update Tenant
+exports.updateTenant = async (req, res) => {
+  const { tenant_name } = req.body;
+  const paramId = req.params.tenant_id;
+  try {
+    // Check if tenant with given ID exists
+    const existingTenant = await prisma.def_tenants.findUnique({
+      where: { tenant_id: Number(paramId) },
+    });
 
-      if (!existingTenant) {
-        return res
-          .status(404)
-          .json({ error: `Tenant with ID '${Number(paramId)}' not found` });
-      }
-
-      // Check if the new tenant_name already exists for another tenant
-      const otherTenantWithSameName = await prisma.def_tenants.findFirst({
-        where: {
-          tenant_id: { not: Number(paramId) }, // Exclude the current tenant from the check
-          tenant_name: tenant_name,
-        },
-      });
-
-      if (otherTenantWithSameName) {
-        return res.status(400).json({
-          error: `Tenant with name '${tenant_name}' already exists`,
-        });
-      }
-
-      // Update the tenant
-      const result = await prisma.def_tenants.update({
-        where: {
-          tenant_id: Number(paramId),
-        },
-        data: {
-          tenant_name: req.body.tenant_name,
-        },
-      });
-      return res.json({ update: result });
-    } catch (error) {
-      console.error("Error updating tenant:", error);
-      return res.status(500).json({ error: "Failed to update tenant" });
+    if (!existingTenant) {
+      return res
+        .status(404)
+        .json({ error: `Tenant with ID '${Number(paramId)}' not found` });
     }
-  });
+
+    // Check if the new tenant_name already exists for another tenant
+    const otherTenantWithSameName = await prisma.def_tenants.findFirst({
+      where: {
+        tenant_id: { not: Number(paramId) }, // Exclude the current tenant from the check
+        tenant_name: tenant_name,
+      },
+    });
+
+    if (otherTenantWithSameName) {
+      return res.status(400).json({
+        error: `Tenant with name '${tenant_name}' already exists`,
+      });
+    }
+
+    // Update the tenant
+    const result = await prisma.def_tenants.update({
+      where: {
+        tenant_id: Number(paramId),
+      },
+      data: {
+        tenant_name: req.body.tenant_name,
+      },
+    });
+    return res.json({ update: result });
+  } catch (error) {
+    console.error("Error updating tenant:", error);
+    return res.status(500).json({ error: "Failed to update tenant" });
+  }
+};
 
 //Upsert Tenant
 exports.upsertTenant = async (req, res) => {
@@ -101,12 +101,19 @@ exports.upsertTenant = async (req, res) => {
 //Delete Tenant
 exports.deleteTenant = async (req, res) => {
   const paramId = req.params.id;
-  const result = await prisma.def_tenants.delete({
+  const findTenant = await prisma.def_tenants.findUnique({
     where: {
       tenant_id: Number(paramId),
     },
   });
-  return res.json({ result: "Tenant Delete Success ." });
+  if (findTenant) {
+    const result = await prisma.def_tenants.delete({
+      where: {
+        tenant_id: Number(paramId),
+      },
+    });
+    return res.json({ result: result, status: "Tenant Delete Success ." });
+  } else res.json({ msg: "Not Found" });
 };
 
 ///test work

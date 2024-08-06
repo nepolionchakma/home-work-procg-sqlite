@@ -18,7 +18,7 @@ const AddUser: FC = () => {
     password: "",
     confirm_password: "",
   });
-
+  console.log(userFormData);
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {

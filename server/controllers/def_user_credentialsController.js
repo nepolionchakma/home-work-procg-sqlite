@@ -98,10 +98,17 @@ exports.upserUser_credentials = async (req, res) => {
 };
 exports.deleteUser_credential = async (req, res) => {
   const user_id = req.params.user_id;
-  const result = await prisma.def_user_credentials.delete({
+  const findUser = await prisma.def_user_credentials.findUnique({
     where: {
       user_id: Number(user_id),
     },
   });
-  return res.json({ deleted: result, status: "success" });
+  if (findUser) {
+    const result = await prisma.def_user_credentials.delete({
+      where: {
+        user_id: Number(user_id),
+      },
+    });
+    return res.json({ deleted: result, status: "success" });
+  } else res.json({ msg: "User credentials not Found" });
 };

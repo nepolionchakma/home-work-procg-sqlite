@@ -179,7 +179,7 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
       // Make requests in parallel
       const [res_def_users, res_def_person, res_def_user_credentials] =
         await Promise.all([
-          axios.post("http://localhost:5000/def-users", {
+          axios.post("http://localhost:3000/def-users", {
             user_name: user_name,
             user_type: user_type,
             email_addresses: email_addresses,
@@ -187,13 +187,13 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
             last_update_by: user?.user_id,
             tenant_id: Number(tenant_id),
           }),
-          axios.post("http://localhost:5000/def-persons", {
+          axios.post("http://localhost:3000/def-persons", {
             first_name: first_name,
             middle_name: middle_name,
             last_name: last_name,
             job_title: job_title,
           }),
-          axios.post("http://localhost:5000/def-user-credentials", {
+          axios.post("http://localhost:3000/def-user-credentials", {
             password: password,
           }),
         ]);
@@ -222,8 +222,8 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const getusers = async () => {
     try {
       const [resDefUsers, resDefPersons] = await Promise.all([
-        axios.get<IDefUsersType[]>("http://localhost:5000/def-users"),
-        axios.get<IDefPersonsType[]>("http://localhost:5000/def-persons"),
+        axios.get<IDefUsersType[]>("http://localhost:3000/def-users"),
+        axios.get<IDefPersonsType[]>("http://localhost:3000/def-persons"),
       ]);
 
       const users = resDefUsers.data;
@@ -251,13 +251,15 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
       console.error("Error fetching users or persons:", error);
     }
   };
+  // update user
+  const updateUser = async () => {};
   // delete user
   const deleteUser = async (id: number) => {
     const [res_def_users, res_def_person, res_def_user_credentials] =
       await Promise.all([
-        axios.delete(`http://localhost:5000/def-users/${id}`),
-        axios.delete(`http://localhost:5000/def-persons/${id}`),
-        axios.delete(`http://localhost:5000/def-user-credentials/${id}`),
+        axios.delete(`http://localhost:3000/def-users/${id}`),
+        axios.delete(`http://localhost:3000/def-persons/${id}`),
+        axios.delete(`http://localhost:3000/def-user-credentials/${id}`),
       ]);
     console.log(res_def_users, res_def_person, res_def_user_credentials);
     if (
@@ -275,32 +277,59 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
     setIsLoading(true);
     // console.log(email, password);
     try {
-      const res = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
-      // const res = await fetch("http://localhost:5000/login", {
+      await axios
+        .post(
+          "http://localhost:3000/login",
+          // "http://localhost:3000/login",
+          {
+            email,
+            password,
+          }
+        )
+        .then((res) => {
+          const user_res_data: IUserData = res.data;
+          setAccess_token(user_res_data.access_token);
+          setUserName(user_res_data.user_name);
+          //-----------------------------------
+          localStorage.setItem("access_token", JSON.stringify(user_res_data));
+          setIsLoading(false);
+          toastify("success", "Login successfully");
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            setError("Invalid Email");
+            setIsLoading(false);
+          } else if (error.response.status === 408) {
+            setError("Invalid Credential");
+            setIsLoading(false);
+          }
+          console.error("Error creating post:", error);
+          toastify("warning", "Login Failed");
+          return;
+        });
+
+      // const res = await fetch("http://localhost:3000/login", {
       //   method: "POST",
       //   headers: {
       //     "Content-Type": "application/json",
       //   },
       //   body: JSON.stringify({ email: email, password: password }),
       // });
-      if (res.status === 200) {
-        // const user_res_data: IUserData = await resData.json();
-        const user_res_data: IUserData = await res.data;
-        setAccess_token(user_res_data.access_token);
-        setUserName(user_res_data.user_name);
-        //-----------------------------------
-        localStorage.setItem("access_token", JSON.stringify(user_res_data));
-        setIsLoading(false);
-      } else if (res.status === 404) {
-        setError("Invalid Email");
-        setIsLoading(false);
-      } else if (res.status === 408) {
-        setError("Invalid Credential");
-        setIsLoading(false);
-      }
+      // if (res.status === 200) {
+      //   // const user_res_data: IUserData = await resData.json();
+      //   const user_res_data: IUserData = await res.data;
+      //   setAccess_token(user_res_data.access_token);
+      //   setUserName(user_res_data.user_name);
+      //   //-----------------------------------
+      //   localStorage.setItem("access_token", JSON.stringify(user_res_data));
+      //   setIsLoading(false);
+      // } else if (res.status === 404) {
+      //   setError("Invalid Email");
+      //   setIsLoading(false);
+      // } else if (res.status === 408) {
+      //   setError("Invalid Credential");
+      //   setIsLoading(false);
+      // }
     } catch (error) {
       console.log(error);
       setError("Sorry, Database isn't connected ");

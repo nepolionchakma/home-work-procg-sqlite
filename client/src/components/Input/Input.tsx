@@ -33,6 +33,7 @@ const Input: React.FC<InputProps> = ({
         </label>
       )}
       <input
+        autoComplete="on"
         autoFocus={autoFocus}
         type={type}
         id={name}

@@ -19,7 +19,7 @@ const id = Math.floor(Math.random() * 1000 + 1);
 const initialLeft: IMergeUsersData[] = [
   {
     user_id: id,
-    user_name: String(id),
+    user_name: "",
     first_name: "",
     middle_name: "",
     last_name: "",
@@ -43,15 +43,15 @@ const initialLeft: IMergeUsersData[] = [
 const App: React.FC = () => {
   const { users_data } = useSqliteAuthContext();
   // console.log(users_data);
+  const users = [...users_data];
   const [leftItems, setLeftItems] = useState<IMergeUsersData[]>(initialLeft);
-  const [rightItems, setRightItems] = useState<IMergeUsersData[]>(users_data);
+  const [rightItems, setRightItems] = useState<IMergeUsersData[]>(users);
   const [activeId, setActiveId] = useState<number | null>(null);
-
   if (leftItems.length === 0) {
     const newId = Math.floor(Math.random() * 1000 + 1);
     const newItem = {
       user_id: newId,
-      user_name: String(newId),
+      user_name: "",
       first_name: "",
       middle_name: "",
       last_name: "",
@@ -139,25 +139,6 @@ const App: React.FC = () => {
         const [movedItem] = leftItems.splice(activeIndexInLeft, 1);
         updatedRight.splice(newIndex, 0, movedItem);
 
-        // Generate a new item and add it to the left side
-        const newId = Math.floor(Math.random() * 1000 + 1);
-        const newItem = {
-          user_id: newId,
-          user_name: String(newId),
-          first_name: "",
-          middle_name: "",
-          last_name: "",
-          job_title: "",
-          user_type: "",
-          tenant_id: 1,
-          email_addresses: "",
-          created_by: "",
-          created_on: "",
-          last_update_by: "",
-          last_update_on: "",
-        };
-        setLeftItems((prev) => [...prev, newItem]);
-
         return updatedRight;
       });
     }
@@ -171,24 +152,25 @@ const App: React.FC = () => {
       const overItemId = over.id;
 
       // Handling dragging from left to right
-      if (active.data.current?.sortable?.containerId === "left") {
-        const draggedItem = leftItems.find(
-          (item) => item.user_id === activeItemId
-        );
+      // if (active.data.current?.sortable?.containerId === "left") {
+      //   const draggedItem = leftItems.find(
+      //     (item) => item.user_id === activeItemId
+      //   );
 
-        if (draggedItem) {
-          // Add the dragged item to the right side
-          setRightItems((prev) => [...prev, draggedItem]);
+      //   // if (draggedItem) {
+      //   //   // Add the dragged item to the right side
+      //   //   setRightItems((prev) => [...prev, draggedItem]);
 
-          // Remove the dragged item from the left side
-          setLeftItems((prev) =>
-            prev.filter((item) => item.user_id !== activeItemId)
-          );
-        }
-      }
+      //   //   // Remove the dragged item from the left side
+      //   //   setLeftItems((prev) =>
+      //   //     prev.filter((item) => item.user_id !== activeItemId)
+      //   //   );
+      //   // }
+      // }
 
-      // Handling reordering within right side
-      else if (active.data.current?.sortable?.containerId === "right") {
+      // // Handling reordering within right side
+      // else
+      if (active.data.current?.sortable?.containerId === "right") {
         const oldIndex = rightItems.findIndex(
           (item) => item.user_id === activeItemId
         );
@@ -210,6 +192,7 @@ const App: React.FC = () => {
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      autoScroll
     >
       <div className="flex">
         <DraggableList id="left" items={leftItems} />
@@ -218,7 +201,13 @@ const App: React.FC = () => {
       <DragOverlay>
         {activeItem ? (
           <div>
-            <DroppableItem user={activeItem} id={String(activeItem.user_id)} />
+            <DroppableItem
+              item={activeItem}
+              id={String(activeItem.user_id)}
+              items={rightItems || leftItems}
+              setItems={setRightItems || setLeftItems}
+              index={0}
+            />
           </div>
         ) : null}
       </DragOverlay>
@@ -227,3 +216,21 @@ const App: React.FC = () => {
 };
 
 export default App;
+// Generate a new item and add it to the left side
+// const newId = Math.floor(Math.random() * 1000 + 1);
+// const newItem = {
+//   user_id: newId,
+//   user_name: String(newId),
+//   first_name: "",
+//   middle_name: "",
+//   last_name: "",
+//   job_title: "",
+//   user_type: "",
+//   tenant_id: 1,
+//   email_addresses: "",
+//   created_by: "",
+//   created_on: "",
+//   last_update_by: "",
+//   last_update_on: "",
+// };
+// setLeftItems((prev) => [...prev, newItem]);

@@ -9,19 +9,16 @@ import { useSqliteAuthContext } from "@/Context/SqliteContext";
 const RightSide: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { login, error, setError } = useSqliteAuthContext();
+  const { login, error, setError, toastify } = useSqliteAuthContext();
   const [checked, setChecked] = useState<boolean>(true);
   console.log(email, password);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(email, password);
-    try {
-      if (!email) return setError("Field your email please");
-      if (!password) return setError("Field your password please");
-      await login(email, password);
-    } catch (error: any) {
-      console.error("login error");
-    }
+
+    if (!email) return setError("Field your email please");
+    if (!password) return setError("Field your password please");
+    await login(email, password);
   };
   return (
     <div>
@@ -43,6 +40,7 @@ const RightSide: React.FC = () => {
                 Email address
               </label>
               <input
+                autoComplete="on"
                 autoFocus
                 type="email"
                 name="email"
@@ -66,7 +64,8 @@ const RightSide: React.FC = () => {
               />
               <label
                 className="flex flex-row-reverse text-url text-sm"
-                htmlFor=""
+                htmlFor="forget_password"
+                id="forget_password"
               >
                 Forget password?
               </label>
@@ -117,7 +116,7 @@ const RightSide: React.FC = () => {
             </div>
             <div className="flex gap-2 items-center justify-center text-xs">
               <img className="w-3" src={language} alt="language img" />
-              <label>English</label>
+              <label id="language">English</label>
               <img src={down_arrow} alt="down_arrow img" />
             </div>
           </form>
