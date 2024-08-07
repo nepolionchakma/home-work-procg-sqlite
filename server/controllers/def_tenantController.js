@@ -76,6 +76,11 @@ exports.updateTenant = async (req, res) => {
 //Upsert Tenant
 exports.upsertTenant = async (req, res) => {
   const tenants = req.body;
+  if (!Array.isArray(tenants)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'users' should be an array" });
+  }
   try {
     const upsertResults = [];
     for (const tenant of tenants) {

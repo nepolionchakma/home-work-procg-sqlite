@@ -7,7 +7,7 @@ router.get(
   def_user_credentialsController.getUniqueUser_credential
 );
 router.post("/", def_user_credentialsController.createUser_credential);
-router.post("/upsert", def_user_credentialsController.upserUser_credentials);
+router.post("/upsert", def_user_credentialsController.upsertUser_credentials);
 router.put("/:user_id", def_user_credentialsController.updateUser_credential);
 router.delete(
   "/:user_id",

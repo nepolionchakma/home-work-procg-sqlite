@@ -35,7 +35,7 @@ const DroppableList: React.FC<DroppableListProps> = ({
       items={items.map((user) => user.user_id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="w-1/2 flex flex-col gap-4 p-4 ">
+      <div className="flex flex-col gap-4 p-4 ">
         {items.map((item, index) => (
           <DroppableItem
             key={item.user_id}
@@ -111,7 +111,7 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
       {...attributes}
       {...listeners}
       ref={setNodeRef}
-      className="bg-gray-300 shadow-lg border rounded-lg cursor-pointer shadow-slate-400 hover:shadow-sky-500 hover:shadow-lg hover:duration-500"
+      className="bg-gray-300 shadow-lg border border-sky-500 rounded-lg cursor-pointer shadow-slate-400 hover:shadow-sky-500 hover:shadow-lg hover:duration-500"
     >
       <div className="flex justify-between bg-sky-500 rounded-t-lg py-1 px-2 text-white items-center">
         <span>{index}</span>

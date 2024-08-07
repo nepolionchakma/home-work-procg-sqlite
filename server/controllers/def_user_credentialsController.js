@@ -79,8 +79,13 @@ exports.updateUser_credential = async (req, res) => {
   return res.json({ updated: result, status: "success" });
 };
 //Upser many user
-exports.upserUser_credentials = async (req, res) => {
+exports.upsertUser_credentials = async (req, res) => {
   const users = req.body;
+  if (!Array.isArray(users)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'users' should be an array" });
+  }
   const upsertResults = [];
   for (const user of users) {
     const result = await prisma.def_user_credentials.upsert({
@@ -90,6 +95,7 @@ exports.upserUser_credentials = async (req, res) => {
       },
       create: {
         user_id: user.user_id,
+        password: user.password,
       },
     });
     upsertResults.push(result);

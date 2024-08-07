@@ -4,7 +4,7 @@ const router = Router();
 router.get("/", def_personsController.getPersons);
 router.get("/:user_id", def_personsController.getUniquePerson);
 router.post("/", def_personsController.createPerson);
-router.post("/upsert", def_personsController.upserPerson);
+router.post("/upsert", def_personsController.upsertPerson);
 router.put("/:user_id/update", def_personsController.updatePerson);
 router.delete("/:user_id", def_personsController.deletePerson);
 

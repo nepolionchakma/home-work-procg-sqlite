@@ -74,8 +74,16 @@ exports.updateUser = async (req, res) => {
   return res.json({ updated: result, status: "success" });
 };
 //Upser many user
-exports.upserUsers = async (req, res) => {
-  const users = req.body;
+exports.upsertUsers = async (req, res) => {
+  // Check if users is an array
+  const users = req.body.users || req.body;
+  if (!Array.isArray(users)) {
+    console.error("Invalid data format:", users);
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'users' should be an array" });
+  }
+
   const upsertResults = [];
   for (const user of users) {
     const result = await prisma.def_users.upsert({
@@ -91,7 +99,6 @@ exports.upserUsers = async (req, res) => {
         tenant_id: user.tenant_id,
       },
       create: {
-        user_id: user.user_id,
         user_name: user.user_name,
         user_type: user.user_type,
         email_addresses: user.email_addresses,
@@ -104,8 +111,10 @@ exports.upserUsers = async (req, res) => {
     });
     upsertResults.push(result);
   }
+
   return res.json({ upsert_users: upsertResults, status: "success" });
 };
+
 exports.deleteUser = async (req, res) => {
   const user_id = req.params.user_id;
   const findUser = await prisma.def_users.findUnique({

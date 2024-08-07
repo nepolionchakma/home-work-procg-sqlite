@@ -9,11 +9,12 @@ import {
   DragOverEvent,
   DragCancelEvent,
 } from "@dnd-kit/core";
-import { SortableContext, arrayMove, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { arrayMove } from "@dnd-kit/sortable";
 import DraggableList from "./DraggableList";
 import DroppableList, { DroppableItem } from "./DroppableList";
 import { IMergeUsersData, useSqliteAuthContext } from "@/Context/SqliteContext";
+import { Info, Plus, SaveAll } from "lucide-react";
+import axios from "axios";
 
 const id = Math.floor(Math.random() * 1000 + 1);
 const initialLeft: IMergeUsersData[] = [
@@ -41,12 +42,15 @@ const initialLeft: IMergeUsersData[] = [
 // ];
 
 const App: React.FC = () => {
-  const { users_data } = useSqliteAuthContext();
+  const { user_data, users_data, toastify, formatDate } =
+    useSqliteAuthContext();
   // console.log(users_data);
   const users = [...users_data];
+  const now = new Date();
   const [leftItems, setLeftItems] = useState<IMergeUsersData[]>(initialLeft);
   const [rightItems, setRightItems] = useState<IMergeUsersData[]>(users);
   const [activeId, setActiveId] = useState<number | null>(null);
+  console.log(user_data);
   if (leftItems.length === 0) {
     const newId = Math.floor(Math.random() * 1000 + 1);
     const newItem = {
@@ -77,6 +81,88 @@ const App: React.FC = () => {
   const left = leftItems.find((item) => item.user_id === activeId);
   const right = rightItems.find((item) => item.user_id === activeId);
   const activeItem = activeId ? left || right : null;
+  const findEmptyInput = rightItems.filter(
+    (user) =>
+      user.first_name === "" ||
+      user.last_name === "" ||
+      user.email_addresses === "" ||
+      user.job_title === "" ||
+      user.user_name === "" ||
+      user.user_type === "" ||
+      user.tenant_id === Number()
+  );
+  //Save all data
+  const handleSaveAll = async () => {
+    const id = user_data?.user_id;
+
+    // Ensure that `rightItems` contains valid data.
+    if (!rightItems || !Array.isArray(rightItems)) {
+      console.error("Invalid data in rightItems.");
+      return;
+    }
+
+    // Prepare data for `def-users` and `def-persons` endpoints.
+    const updateDefUsers = rightItems.map((user) => ({
+      user_id: user.user_id,
+      user_name: user.user_name,
+      user_type: user.user_type,
+      tenant_id: user.tenant_id,
+      email_addresses: user.email_addresses,
+      created_by: id,
+      created_on: formatDate(now),
+      last_update_by: id,
+      last_updated_on: formatDate(now),
+    }));
+
+    const updateDefPersons = rightItems.map((user) => ({
+      user_id: user.user_id,
+      first_name: user.first_name,
+      middle_name: user.middle_name,
+      last_name: user.last_name,
+      job_title: user.job_title,
+    }));
+
+    console.log(typeof updateDefUsers);
+    console.log(typeof updateDefPersons);
+    console.log(typeof user_data);
+
+    console.log("Def Users Data:", updateDefUsers);
+    console.log("Def Persons Data:", updateDefPersons);
+    console.log("User Data:", user_data);
+
+    try {
+      // Perform API requests in parallel
+      const [defUsers, defPersons] = await Promise.all([
+        axios
+          .post(
+            "http://localhost:3000/def-users/upsert",
+            { users: updateDefUsers }
+            // { headers: { "Content-Type": "application/json" } }
+          )
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err)),
+        axios
+          .post(
+            "http://localhost:3000/def-persons/upsert",
+            { persons: updateDefPersons }
+            // { headers: { "Content-Type": "application/json" } }
+          )
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err)),
+        ,
+      ]);
+      toastify("success", "Successfully saved");
+    } catch (error) {
+      // Handle error and log relevant information
+      if (axios.isAxiosError(error)) {
+        console.error("Error response:", error.response?.data);
+        console.error("Error status:", error.response?.status);
+        console.error("Error headers:", error.response?.headers);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+    }
+  };
 
   //Find left or left container
   const findContainer = (id: string | number): string | undefined => {
@@ -132,16 +218,18 @@ const App: React.FC = () => {
       newIndex = overIndexInRight === -1 ? rightItems.length : overIndexInRight;
     }
 
-    if (activeContainer === "left" && overContainer === "right") {
-      // Move item from leftEmptyWidget to users
-      setRightItems((prev) => {
-        const updatedRight = [...prev];
-        const [movedItem] = leftItems.splice(activeIndexInLeft, 1);
-        updatedRight.splice(newIndex, 0, movedItem);
+    if (findEmptyInput.length === 0) {
+      if (activeContainer === "left" && overContainer === "right") {
+        // Move item from leftEmptyWidget to users
+        setRightItems((prev) => {
+          const updatedRight = [...prev];
+          const [movedItem] = leftItems.splice(activeIndexInLeft, 1);
+          updatedRight.splice(newIndex, 0, movedItem);
 
-        return updatedRight;
-      });
-    }
+          return updatedRight;
+        });
+      }
+    } else toastify("warning", "Please field all fill");
   };
 
   const handleDragEnd = (event: any) => {
@@ -194,21 +282,37 @@ const App: React.FC = () => {
       onDragEnd={handleDragEnd}
       autoScroll
     >
-      <div className="flex">
-        <DraggableList id="left" items={leftItems} />
-        <DroppableList id="right" items={rightItems} setItems={setRightItems} />
+      <div className="flex gap-1">
+        <div className="w-1/2">
+          <DraggableList id="left" items={leftItems} />
+        </div>
+        <div className="w-1/2">
+          <div className="flex gap-2 sticky top-16 px-4">
+            <Plus className="cursor-pointer hover:text-sky-700 duration-500" />
+            <SaveAll
+              onClick={handleSaveAll}
+              className="cursor-pointer hover:text-green-700 duration-500"
+            />
+            <Info className="cursor-pointer hover:text-orange-700 duration-500" />
+          </div>
+          <DroppableList
+            id="right"
+            items={rightItems}
+            setItems={setRightItems}
+          />
+        </div>
       </div>
       <DragOverlay>
         {activeItem ? (
-          <div>
-            <DroppableItem
-              item={activeItem}
-              id={String(activeItem.user_id)}
-              items={rightItems || leftItems}
-              setItems={setRightItems || setLeftItems}
-              index={0}
-            />
-          </div>
+          <DroppableItem
+            item={activeItem}
+            id={String(activeItem.user_id)}
+            items={leftItems.includes(activeItem) ? leftItems : rightItems}
+            setItems={
+              leftItems.includes(activeItem) ? setLeftItems : setRightItems
+            }
+            index={0}
+          />
         ) : null}
       </DragOverlay>
     </DndContext>

@@ -18,7 +18,6 @@ exports.createPerson = async (req, res) => {
   });
   return res.json({ Person: result });
 };
-
 //Get Unique User
 exports.getUniquePerson = async (req, res) => {
   const user_id = req.params.user_id;
@@ -48,8 +47,13 @@ exports.updatePerson = async (req, res) => {
   return res.json({ updated: result, status: "success" });
 };
 //Upser many user
-exports.upserPerson = async (req, res) => {
-  const persons = req.body;
+exports.upsertPerson = async (req, res) => {
+  const persons = req.body.persons || req.body;
+  if (!Array.isArray(persons)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid input: 'users' should be an array" });
+  }
   const upsertResults = [];
   for (const person of persons) {
     const result = await prisma.def_persons.upsert({
@@ -62,7 +66,6 @@ exports.upserPerson = async (req, res) => {
         job_title: person.job_title,
       },
       create: {
-        user_id: person.user_id,
         user_name: person.user_name,
         first_name: person.first_name,
         middle_name: person.middle_name,

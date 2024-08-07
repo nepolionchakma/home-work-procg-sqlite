@@ -62,18 +62,14 @@ export interface IMergeUsersData {
   last_update_by?: string;
   last_update_on?: string;
 }
+export interface IUserData {
+  user_id: number;
+  user_name: string;
+  tenant_id: number;
+  access_token: string;
+}
 export interface IAuthTypes {
-  signup: ({
-    user_name,
-    first_name,
-    middle_name,
-    last_name,
-    job_title,
-    user_type,
-    tenant_id,
-    email_addresses,
-    password,
-  }: ICreateUserTypes) => void;
+  signup: (userData: ICreateUserTypes) => void;
   getusers: () => void;
   deleteUser: (id: number) => void;
   users_data: IMergeUsersData[];
@@ -86,24 +82,27 @@ export interface IAuthTypes {
   error: string;
   setError: React.Dispatch<React.SetStateAction<string>>;
   userName: string;
-  user_data: IUserData[];
+  user_data: IUserData | null;
   toastify: (info: string, msg: string) => void;
+  formatDate: (data: any) => void;
 }
-export interface IUserData {
-  user_id: number;
-  user_name: string;
-  tenant_id: number;
-  access_token: string;
-}
+
 const toastify = (info: string, msg: string) => {
-  if (info === "success") {
-    toast.success(msg);
-  } else if (info === "warning") {
-    toast.warn(msg);
-  } else if (info === "error") {
-    toast.error(msg);
-  } else if (info === "info") {
-    toast.info(msg);
+  switch (info) {
+    case "success":
+      toast.success(msg);
+      break;
+    case "warning":
+      toast.warn(msg);
+      break;
+    case "error":
+      toast.error(msg);
+      break;
+    case "info":
+      toast.info(msg);
+      break;
+    default:
+      toast(msg);
   }
 };
 export const SqliteAuthContext = createContext<IAuthTypes | null>(null);
@@ -118,21 +117,40 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const [user_data, setUser_data] = useState<IUserData[]>([]);
+  const [user_data, setUser_data] = useState<IUserData | null>(null);
   const [users_data, setUsers_data] = useState<IMergeUsersData[]>([]);
+  const now = new Date();
+  const formatDate = (date: any) => {
+    // Extract components
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(date.getUTCDate()).padStart(2, "0");
 
+    // Convert hours and minutes to 12-hour format with AM/PM
+    let hours = date.getUTCHours();
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Hour '0' should be '12'
+    const formattedHours = String(hours).padStart(2, "0");
+
+    // Return the formatted date and time string
+    return `${year}-${month}-${day} ${formattedHours}:${minutes}${ampm} UTC+0`;
+  };
   //---------------------------------
+  // Get localstorage data
   useEffect(() => {
     const storeData = localStorage.getItem("access_token");
     if (storeData) {
       try {
-        const userData: IUserData[] = JSON.parse(storeData);
+        const userData: IUserData = JSON.parse(storeData);
         setUser_data(userData);
       } catch (error) {
         console.error("Error parsing stored user data:", error);
       }
     }
   }, []);
+
   // get access token when open
   const [access_token, setAccess_token] = useState<string | null>(() => {
     const storeData = localStorage.getItem("access_token");
@@ -147,54 +165,30 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
     }
     return null;
   });
-  // get user from localstorage
-  const [user, setUser] = useState<IUserData | null>(() => {
-    const storeData = localStorage.getItem("access_token");
-    if (storeData) {
-      try {
-        const userData: IUserData = JSON.parse(storeData);
-        return userData;
-      } catch (error) {
-        console.error("Error parsing stored access token:", error);
-        return null;
-      }
-    }
-    return null;
-  });
+
   // sign up
-  const signup = async ({
-    user_name,
-    first_name,
-    middle_name,
-    last_name,
-    job_title,
-    user_type,
-    tenant_id,
-    email_addresses,
-    password,
-    confirm_password,
-  }: ICreateUserTypes) => {
+  const signup = async (userData: ICreateUserTypes) => {
     try {
       setIsLoading(true);
       // Make requests in parallel
       const [res_def_users, res_def_person, res_def_user_credentials] =
         await Promise.all([
           axios.post("http://localhost:3000/def-users", {
-            user_name: user_name,
-            user_type: user_type,
-            email_addresses: email_addresses,
-            created_by: user?.user_id,
-            last_update_by: user?.user_id,
-            tenant_id: Number(tenant_id),
+            user_name: userData.user_name,
+            user_type: userData.user_type,
+            email_addresses: userData.email_addresses,
+            created_by: user_data?.user_id,
+            last_update_by: user_data?.user_id,
+            tenant_id: Number(userData.tenant_id),
           }),
           axios.post("http://localhost:3000/def-persons", {
-            first_name: first_name,
-            middle_name: middle_name,
-            last_name: last_name,
-            job_title: job_title,
+            first_name: userData.first_name,
+            middle_name: userData.middle_name,
+            last_name: userData.last_name,
+            job_title: userData.job_title,
           }),
           axios.post("http://localhost:3000/def-user-credentials", {
-            password: password,
+            password: userData.password,
           }),
         ]);
 
@@ -204,20 +198,18 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
         res_def_person.status === 200 &&
         res_def_user_credentials.status === 200
       ) {
-        toastify("success", "Succesfully add a user.");
-        setIsLoading(false);
+        toastify("success", "Successfully added a user.");
+      } else {
+        toastify("error", "An error occurred during user creation.");
       }
-      // else if (res.status === 404) {
-      //   setError("Invalid Email");
-      //   setIsLoading(false);
-      // } else if (res.status === 408) {
-      //   setError("Invalid Credential");
-      //   setIsLoading(false);
-      // }
     } catch (error) {
       console.error("Error signing up user:", error);
+      toastify("error", "Failed to sign up user.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   // get users
   const getusers = async () => {
     try {
@@ -252,7 +244,7 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
     }
   };
   // update user
-  const updateUser = async () => {};
+  // const updateUser = async () => {};
   // delete user
   const deleteUser = async (id: number) => {
     const [res_def_users, res_def_person, res_def_user_credentials] =
@@ -307,29 +299,6 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
           toastify("warning", "Login Failed");
           return;
         });
-
-      // const res = await fetch("http://localhost:3000/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ email: email, password: password }),
-      // });
-      // if (res.status === 200) {
-      //   // const user_res_data: IUserData = await resData.json();
-      //   const user_res_data: IUserData = await res.data;
-      //   setAccess_token(user_res_data.access_token);
-      //   setUserName(user_res_data.user_name);
-      //   //-----------------------------------
-      //   localStorage.setItem("access_token", JSON.stringify(user_res_data));
-      //   setIsLoading(false);
-      // } else if (res.status === 404) {
-      //   setError("Invalid Email");
-      //   setIsLoading(false);
-      // } else if (res.status === 408) {
-      //   setError("Invalid Credential");
-      //   setIsLoading(false);
-      // }
     } catch (error) {
       console.log(error);
       setError("Sorry, Database isn't connected ");
@@ -357,6 +326,7 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
     userName,
     user_data,
     toastify,
+    formatDate,
   };
   return (
     <SqliteAuthContext.Provider value={value}>
