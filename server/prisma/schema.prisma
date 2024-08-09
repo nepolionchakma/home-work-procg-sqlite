@@ -34,7 +34,7 @@ model def_job_titles {
 }
 
 model def_persons {
-  user_id     Int     @id @default(autoincrement())
+  user_id     Int     @id
   first_name  String?
   middle_name String?
   last_name   String?
@@ -67,7 +67,7 @@ model def_tenants {
 }
 
 model def_user_credentials {
-  user_id  Int     @id @default(autoincrement())
+  user_id  Int     @id
   password String?
 }
 
@@ -95,7 +95,7 @@ model def_user_types {
 }
 
 model def_users {
-  user_id                     Int                           @id @default(autoincrement())
+  user_id                     Int                           @id
   user_name                   String?
   user_type                   String?
   email_addresses             String?

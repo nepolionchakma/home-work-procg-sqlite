@@ -2,7 +2,14 @@ import Input from "@/components/Input/Input";
 import IsLoadingBtn from "@/components/Loading/IsLoadingBtn";
 import { Button } from "@/components/ui/button";
 import { useSqliteAuthContext } from "@/Context/SqliteContext";
-import { ChangeEvent, FC, FormEvent, FormEventHandler, useState } from "react";
+import {
+  ChangeEvent,
+  FC,
+  FormEvent,
+  FormEventHandler,
+  useEffect,
+  useState,
+} from "react";
 
 const AddUser: FC = () => {
   const { signup, isLoading } = useSqliteAuthContext();
@@ -18,10 +25,11 @@ const AddUser: FC = () => {
     password: "",
     confirm_password: "",
   });
-  console.log(userFormData);
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    e.preventDefault();
     setUserFormData({ ...userFormData, [e.target.name]: e.target.value });
   };
 

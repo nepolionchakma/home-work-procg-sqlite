@@ -11,11 +11,7 @@ const options = [
   "http://localhost:5173",
   "http://192.168.0.169:8000",
 ];
-app.use(
-  cors({
-    origin: options,
-  })
-);
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send(`Test Server running port ${port}`);

@@ -1,4 +1,5 @@
 const prisma = require("../prisma");
+
 //Time convert
 const formatDate = (date) => {
   // Extract components
@@ -29,6 +30,7 @@ exports.createUser = async (req, res) => {
   const now = new Date();
   const result = await prisma.def_users.create({
     data: {
+      user_id: user.user_id,
       user_name: user.user_name,
       user_type: user.user_type,
       email_addresses: user.email_addresses,
@@ -99,6 +101,7 @@ exports.upsertUsers = async (req, res) => {
         tenant_id: user.tenant_id,
       },
       create: {
+        user_id: user.user_id,
         user_name: user.user_name,
         user_type: user.user_type,
         email_addresses: user.email_addresses,

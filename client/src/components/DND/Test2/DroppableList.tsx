@@ -85,6 +85,7 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
   };
   console.log(items);
   const handleDelete = (id: number) => {
+    deleteUser(id);
     const remainingUser = items.filter((item) => item.user_id !== id);
     if (remainingUser.length !== 0) {
       setItems(remainingUser);

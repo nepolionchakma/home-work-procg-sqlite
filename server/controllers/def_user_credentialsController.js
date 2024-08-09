@@ -23,7 +23,7 @@ exports.getUser_credentials = async (req, res) => {
 exports.createUser_credential = async (req, res) => {
   try {
     // Validation  START/---------------------------------/
-    const user_data = req.body;
+    const user = req.body;
     // const findDefUserId = await prisma.def_user_credentials.findUnique({
     //   where: {
     //     user_id: user_data.user_id,
@@ -45,7 +45,8 @@ exports.createUser_credential = async (req, res) => {
     const result = await prisma.def_user_credentials.create({
       //for auto incriment user_id
       data: {
-        password: hashPassword(user_data.password),
+        user_id: user.user_id,
+        password: hashPassword(user.password),
       },
     });
     return res.status(200).json({ result });

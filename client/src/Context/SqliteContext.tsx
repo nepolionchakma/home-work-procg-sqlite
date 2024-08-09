@@ -114,11 +114,14 @@ export const useSqliteAuthContext = () => {
   return authconsumer;
 };
 export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
+  const apiUrl = "localhost:3000";
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const [user_data, setUser_data] = useState<IUserData | null>(null);
   const [users_data, setUsers_data] = useState<IMergeUsersData[]>([]);
+
   const now = new Date();
   const formatDate = (date: any) => {
     // Extract components
@@ -168,12 +171,14 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
 
   // sign up
   const signup = async (userData: ICreateUserTypes) => {
+    const user_id = Math.floor(Math.random() * 100000 + 1);
     try {
       setIsLoading(true);
       // Make requests in parallel
       const [res_def_users, res_def_person, res_def_user_credentials] =
         await Promise.all([
-          axios.post("http://localhost:3000/def-users", {
+          axios.post(`http://${apiUrl}/def-users`, {
+            user_id: user_id,
             user_name: userData.user_name,
             user_type: userData.user_type,
             email_addresses: userData.email_addresses,
@@ -181,13 +186,15 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
             last_update_by: user_data?.user_id,
             tenant_id: Number(userData.tenant_id),
           }),
-          axios.post("http://localhost:3000/def-persons", {
+          axios.post(`http://${apiUrl}/def-persons`, {
+            user_id: user_id,
             first_name: userData.first_name,
             middle_name: userData.middle_name,
             last_name: userData.last_name,
             job_title: userData.job_title,
           }),
-          axios.post("http://localhost:3000/def-user-credentials", {
+          axios.post(`http://${apiUrl}/def-user-credentials`, {
+            user_id: user_id,
             password: userData.password,
           }),
         ]);
@@ -214,8 +221,8 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const getusers = async () => {
     try {
       const [resDefUsers, resDefPersons] = await Promise.all([
-        axios.get<IDefUsersType[]>("http://localhost:3000/def-users"),
-        axios.get<IDefPersonsType[]>("http://localhost:3000/def-persons"),
+        axios.get<IDefUsersType[]>(`http://${apiUrl}/def-users`),
+        axios.get<IDefPersonsType[]>(`http://${apiUrl}/def-persons`),
       ]);
 
       const users = resDefUsers.data;
@@ -249,9 +256,9 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const deleteUser = async (id: number) => {
     const [res_def_users, res_def_person, res_def_user_credentials] =
       await Promise.all([
-        axios.delete(`http://localhost:3000/def-users/${id}`),
-        axios.delete(`http://localhost:3000/def-persons/${id}`),
-        axios.delete(`http://localhost:3000/def-user-credentials/${id}`),
+        axios.delete(`http://${apiUrl}/def-users/${id}`),
+        axios.delete(`http://${apiUrl}/def-persons/${id}`),
+        axios.delete(`http://${apiUrl}/def-user-credentials/${id}`),
       ]);
     console.log(res_def_users, res_def_person, res_def_user_credentials);
     if (
@@ -259,7 +266,7 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
       res_def_person.status === 200 &&
       res_def_user_credentials.status === 200
     ) {
-      toastify("success", "Succesfully delete a user.");
+      toastify("success", "Succesfully deleteed");
       setIsLoading(false);
     }
   };
@@ -270,14 +277,10 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
     // console.log(email, password);
     try {
       await axios
-        .post(
-          "http://localhost:3000/login",
-          // "http://localhost:3000/login",
-          {
-            email,
-            password,
-          }
-        )
+        .post(`http://${apiUrl}/login`, {
+          email,
+          password,
+        })
         .then((res) => {
           const user_res_data: IUserData = res.data;
           setAccess_token(user_res_data.access_token);

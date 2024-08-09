@@ -16,7 +16,7 @@ import { IMergeUsersData, useSqliteAuthContext } from "@/Context/SqliteContext";
 import { Info, Plus, SaveAll } from "lucide-react";
 import axios from "axios";
 
-const id = Math.floor(Math.random() * 1000 + 1);
+const id = Math.floor(Math.random() * 10000000000 + 1);
 const initialLeft: IMergeUsersData[] = [
   {
     user_id: id,
@@ -50,24 +50,26 @@ const App: React.FC = () => {
   const [leftItems, setLeftItems] = useState<IMergeUsersData[]>(initialLeft);
   const [rightItems, setRightItems] = useState<IMergeUsersData[]>(users);
   const [activeId, setActiveId] = useState<number | null>(null);
+
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+  const newId = Math.floor(Math.random() * 10000000000 + 1);
+  const newItem = {
+    user_id: newId,
+    user_name: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    job_title: "",
+    user_type: "",
+    tenant_id: 1,
+    email_addresses: "",
+    created_by: "",
+    created_on: "",
+    last_update_by: "",
+    last_update_on: "",
+  };
   console.log(user_data);
   if (leftItems.length === 0) {
-    const newId = Math.floor(Math.random() * 1000 + 1);
-    const newItem = {
-      user_id: newId,
-      user_name: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      job_title: "",
-      user_type: "",
-      tenant_id: 1,
-      email_addresses: "",
-      created_by: "",
-      created_on: "",
-      last_update_by: "",
-      last_update_on: "",
-    };
     setLeftItems((prev) => [...prev, newItem]);
   }
 
@@ -91,9 +93,12 @@ const App: React.FC = () => {
       user.user_type === "" ||
       user.tenant_id === Number()
   );
+  console.log(findEmptyInput);
   //Save all data
   const handleSaveAll = async () => {
     const id = user_data?.user_id;
+    if (findEmptyInput.length === 0 && !isChanged)
+      return toastify("warning", "Please field all fill");
 
     // Ensure that `rightItems` contains valid data.
     if (!rightItems || !Array.isArray(rightItems)) {
@@ -121,15 +126,6 @@ const App: React.FC = () => {
       last_name: user.last_name,
       job_title: user.job_title,
     }));
-
-    console.log(typeof updateDefUsers);
-    console.log(typeof updateDefPersons);
-    console.log(typeof user_data);
-
-    console.log("Def Users Data:", updateDefUsers);
-    console.log("Def Persons Data:", updateDefPersons);
-    console.log("User Data:", user_data);
-
     try {
       // Perform API requests in parallel
       const [defUsers, defPersons] = await Promise.all([
@@ -272,7 +268,23 @@ const App: React.FC = () => {
       }
     }
   };
+  const handleAddClick = () => {
+    if (findEmptyInput.length === 0) {
+      setRightItems((prev) => [newItem, ...prev]);
+    } else toastify("warning", "Please field all fill");
+  };
 
+  useEffect(() => {
+    const hasChanges = rightItems.some((user, index) => {
+      return Object.keys(user).some(
+        (key) =>
+          user[key as keyof IMergeUsersData] !==
+          users_data[index][key as keyof IMergeUsersData]
+      );
+    });
+    setIsChanged(hasChanges);
+  }, [rightItems]);
+  console.log(isChanged);
   return (
     <DndContext
       sensors={sensors}
@@ -288,11 +300,25 @@ const App: React.FC = () => {
         </div>
         <div className="w-1/2">
           <div className="flex gap-2 sticky top-16 px-4">
-            <Plus className="cursor-pointer hover:text-sky-700 duration-500" />
-            <SaveAll
-              onClick={handleSaveAll}
-              className="cursor-pointer hover:text-green-700 duration-500"
-            />
+            {findEmptyInput.length === 0 ? (
+              <Plus
+                onClick={handleAddClick}
+                className="cursor-pointer hover:text-sky-700 duration-500"
+              />
+            ) : (
+              <Plus className="cursor-pointer opacity-20 hover:text-sky-700 duration-500" />
+            )}
+            {isChanged && findEmptyInput.length === 0 ? (
+              <SaveAll
+                onClick={handleSaveAll}
+                className={`cursor-pointer hover:text-green-700 duration-500}`}
+              />
+            ) : (
+              <SaveAll
+                className={`cursor-pointer opacity-20 hover:text-green-700 duration-500}`}
+              />
+            )}
+
             <Info className="cursor-pointer hover:text-orange-700 duration-500" />
           </div>
           <DroppableList
