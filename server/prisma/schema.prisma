@@ -33,6 +33,12 @@ model def_job_titles {
   job_title_name String?
 }
 
+model def_widget_attributes {
+  user_id         Int @id
+  widget_position Int
+  widget_state    Int
+}
+
 model def_persons {
   user_id     Int     @id
   first_name  String?

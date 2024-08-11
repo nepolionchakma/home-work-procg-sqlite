@@ -25,6 +25,13 @@ CREATE TABLE "def_job_titles" (
 );
 
 -- CreateTable
+CREATE TABLE "def_widget_attributes" (
+    "user_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "widget_position" INTEGER NOT NULL,
+    "widget_state" INTEGER NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "def_persons" (
     "user_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "first_name" TEXT,

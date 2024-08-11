@@ -83,7 +83,7 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
     transition,
     cursor: "grab",
   };
-  console.log(items);
+
   const handleDelete = (id: number) => {
     deleteUser(id);
     const remainingUser = items.filter((item) => item.user_id !== id);
@@ -105,7 +105,6 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
       );
     }
   };
-
   return (
     <div
       style={style}
@@ -116,9 +115,19 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
     >
       <div className="flex justify-between bg-sky-500 rounded-t-lg py-1 px-2 text-white items-center">
         <span>{index}</span>
-        <div className="flex text-xs">
-          <Minimize className="p-1 cursor-pointer hover:text-gray-600" />
-          <Maximize className="p-1 cursor-pointer hover:text-green-600" />
+        <div className="flex text-xs duration-700">
+          {item.widget_state === 1 ? (
+            <Minimize
+              onClick={() => handleChange(index, "widget_state", 0)}
+              className="p-1 cursor-pointer hover:text-gray-600"
+            />
+          ) : (
+            <Maximize
+              onClick={() => handleChange(index, "widget_state", 1)}
+              className="p-1 cursor-pointer hover:text-green-600"
+            />
+          )}
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <div className="hover:text-white rounded-md">
@@ -194,67 +203,81 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
           </div>
         </div>
         {/* 2nd row */}
-        <div className="flex gap-3">
-          <div className="flex flex-col w-[25%]">
-            <label htmlFor={`user_name-${index}`}>User Name</label>
-            <input
-              className="px-2 rounded"
-              type="text"
-              id={`user_name-${index}`}
-              name={`user_name-${index}`}
-              value={item.user_name}
-              onChange={(e) => handleChange(index, "user_name", e.target.value)}
-            />
+        {item.widget_state === 1 && (
+          <div
+            className={`flex gap-3 my-1 ease-in ${
+              item.widget_state === 1 ? "duration-700" : "duration-700"
+            }`}
+          >
+            <div className="flex flex-col w-[25%]">
+              <label htmlFor={`user_name-${index}`}>User Name</label>
+              <input
+                className="px-2 rounded"
+                type="text"
+                id={`user_name-${index}`}
+                name={`user_name-${index}`}
+                value={item.user_name}
+                onChange={(e) =>
+                  handleChange(index, "user_name", e.target.value)
+                }
+              />
+            </div>
+            <div className="flex flex-col w-[25%]">
+              <label htmlFor={`job_title-${index}`}>Job Title : </label>
+              <select
+                className="border rounded py-[1px]"
+                name={`job_title-${index}`}
+                id={`job_title-${index}`}
+                value={item.job_title}
+                onChange={(e) =>
+                  handleChange(index, "job_title", e.target.value)
+                }
+              >
+                <option>None</option>
+                <option value="full_stack">Full Stack</option>
+                <option value="frontend">Frontend</option>
+                <option value="backend">Backend</option>
+                <option value="ui_designer">UI Designer</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+            <div className="flex flex-col w-[25%]">
+              <label htmlFor={`user_type-${index}`}>User Type : </label>
+              <select
+                className="border rounded py-[1px]"
+                name={`user_type-${index}`}
+                id={`user_type-${index}`}
+                value={item.user_type}
+                onChange={(e) =>
+                  handleChange(index, "user_type", e.target.value)
+                }
+              >
+                <option>None</option>
+                <option value="admin">Admin</option>
+                <option value="employee">Employee</option>
+                <option value="client">Client</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+            <div className="flex flex-col w-[25%]">
+              <label htmlFor={`tenant_id-${index}`}>Tenant Id : </label>
+              <select
+                className="border rounded py-[1px]"
+                name={`tenant_id-${index}`}
+                id={`tenant_id-${index}`}
+                value={item.tenant_id}
+                onChange={(e) =>
+                  handleChange(index, "tenant_id", e.target.value)
+                }
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
           </div>
-          <div className="flex flex-col w-[25%]">
-            <label htmlFor={`job_title-${index}`}>Job Title : </label>
-            <select
-              className="border rounded py-[1px]"
-              name={`job_title-${index}`}
-              id={`job_title-${index}`}
-              value={item.job_title}
-              onChange={(e) => handleChange(index, "job_title", e.target.value)}
-            >
-              <option>None</option>
-              <option value="full_stack">Full Stack</option>
-              <option value="frontend">Frontend</option>
-              <option value="backend">Backend</option>
-              <option value="ui_designer">UI Designer</option>
-              <option value="manager">Manager</option>
-            </select>
-          </div>
-          <div className="flex flex-col w-[25%]">
-            <label htmlFor={`user_type-${index}`}>User Type : </label>
-            <select
-              className="border rounded py-[1px]"
-              name={`user_type-${index}`}
-              id={`user_type-${index}`}
-              value={item.user_type}
-              onChange={(e) => handleChange(index, "user_type", e.target.value)}
-            >
-              <option>None</option>
-              <option value="admin">Admin</option>
-              <option value="employee">Employee</option>
-              <option value="client">Client</option>
-              <option value="user">User</option>
-            </select>
-          </div>
-          <div className="flex flex-col w-[25%]">
-            <label htmlFor={`tenant_id-${index}`}>Tenant Id : </label>
-            <select
-              className="border rounded py-[1px]"
-              name={`tenant_id-${index}`}
-              id={`tenant_id-${index}`}
-              value={item.tenant_id}
-              onChange={(e) => handleChange(index, "tenant_id", e.target.value)}
-            >
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

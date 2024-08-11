@@ -32,19 +32,14 @@ const initialLeft: IMergeUsersData[] = [
     created_on: "",
     last_update_by: "",
     last_update_on: "",
+    widget_position: Number(),
+    widget_state: 1,
   },
 ];
-// const initialRight: User[] = [
-//   { user_id: 1, user_name: "b" },
-//   { user_id: 2, user_name: "c" },
-//   { user_id: 3, user_name: "d" },
-//   { user_id: 4, user_name: "e" },
-// ];
-
 const App: React.FC = () => {
-  const { user_data, users_data, toastify, formatDate } =
+  const { user_data, users_data, toastify, formatDate, getusers } =
     useSqliteAuthContext();
-  // console.log(users_data);
+
   const users = [...users_data];
   const now = new Date();
   const [leftItems, setLeftItems] = useState<IMergeUsersData[]>(initialLeft);
@@ -67,8 +62,9 @@ const App: React.FC = () => {
     created_on: "",
     last_update_by: "",
     last_update_on: "",
+    widget_position: Number(),
+    widget_state: 1,
   };
-  console.log(user_data);
   if (leftItems.length === 0) {
     setLeftItems((prev) => [...prev, newItem]);
   }
@@ -93,7 +89,7 @@ const App: React.FC = () => {
       user.user_type === "" ||
       user.tenant_id === Number()
   );
-  console.log(findEmptyInput);
+
   //Save all data
   const handleSaveAll = async () => {
     const id = user_data?.user_id;
@@ -126,26 +122,32 @@ const App: React.FC = () => {
       last_name: user.last_name,
       job_title: user.job_title,
     }));
+    const updateDefWidgetAttributes = rightItems.map((user, index) => ({
+      user_id: user.user_id,
+      widget_position: user.widget_position,
+      widget_state: user.widget_state,
+    }));
     try {
       // Perform API requests in parallel
-      const [defUsers, defPersons] = await Promise.all([
+      await Promise.all([
         axios
-          .post(
-            "http://localhost:3000/def-users/upsert",
-            { users: updateDefUsers }
-            // { headers: { "Content-Type": "application/json" } }
-          )
+          .post("http://localhost:3000/def-users/upsert", {
+            users: updateDefUsers,
+          })
           .then((res) => console.log(res))
           .catch((err) => console.log(err)),
         axios
-          .post(
-            "http://localhost:3000/def-persons/upsert",
-            { persons: updateDefPersons }
-            // { headers: { "Content-Type": "application/json" } }
-          )
+          .post("http://localhost:3000/def-persons/upsert", {
+            persons: updateDefPersons,
+          })
           .then((res) => console.log(res))
           .catch((err) => console.log(err)),
-        ,
+        axios
+          .post("http://localhost:3000/def-widget-attributes/upsert", {
+            widgets: updateDefWidgetAttributes,
+          })
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err)),
       ]);
       toastify("success", "Successfully saved");
     } catch (error) {
@@ -221,7 +223,6 @@ const App: React.FC = () => {
           const updatedRight = [...prev];
           const [movedItem] = leftItems.splice(activeIndexInLeft, 1);
           updatedRight.splice(newIndex, 0, movedItem);
-
           return updatedRight;
         });
       }
@@ -263,7 +264,12 @@ const App: React.FC = () => {
         );
 
         if (oldIndex !== -1 && newIndex !== -1) {
-          setRightItems(arrayMove(rightItems, oldIndex, newIndex));
+          setRightItems(
+            arrayMove(rightItems, oldIndex, newIndex).map((user, index) => ({
+              ...user,
+              widget_position: index,
+            }))
+          );
         }
       }
     }
@@ -275,6 +281,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    // change any value then call
     const hasChanges = rightItems.some((user, index) => {
       return Object.keys(user).some(
         (key) =>
@@ -283,8 +290,9 @@ const App: React.FC = () => {
       );
     });
     setIsChanged(hasChanges);
-  }, [rightItems]);
-  console.log(isChanged);
+    // call if state change
+    getusers();
+  }, [rightItems, handleSaveAll, isChanged]);
   return (
     <DndContext
       sensors={sensors}

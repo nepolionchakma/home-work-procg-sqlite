@@ -33,7 +33,7 @@ const AddUser: FC = () => {
     setUserFormData({ ...userFormData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (userFormData.password === userFormData.confirm_password) {
       signup(userFormData);

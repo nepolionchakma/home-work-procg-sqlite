@@ -47,6 +47,11 @@ export interface IDefPersonsType {
   last_name: string;
   job_title: string;
 }
+export interface IDefWidgetsType {
+  user_id: number;
+  widget_position: number;
+  widget_state: number;
+}
 export interface IMergeUsersData {
   user_id: number;
   user_name: string;
@@ -61,6 +66,8 @@ export interface IMergeUsersData {
   created_on?: string;
   last_update_by?: string;
   last_update_on?: string;
+  widget_position: number;
+  widget_state: number;
 }
 export interface IUserData {
   user_id: number;
@@ -220,17 +227,21 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   // get users
   const getusers = async () => {
     try {
-      const [resDefUsers, resDefPersons] = await Promise.all([
+      const [resDefUsers, resDefPersons, resWidgets] = await Promise.all([
         axios.get<IDefUsersType[]>(`http://${apiUrl}/def-users`),
         axios.get<IDefPersonsType[]>(`http://${apiUrl}/def-persons`),
+        axios.get<IDefWidgetsType[]>(`http://${apiUrl}/def-widget-attributes`),
       ]);
 
       const users = resDefUsers.data;
       const persons = resDefPersons.data;
+      const widgets = resWidgets.data;
 
       // Create a map of persons by user_id for quick lookup
       const personsMap = new Map<number, IDefPersonsType>();
       persons.forEach((person) => personsMap.set(person.user_id, person));
+      const widgetMap = new Map<number, IDefWidgetsType>();
+      widgets.forEach((widget) => widgetMap.set(widget.user_id, widget));
 
       // Merge data based on user_id
       const mergedData: IMergeUsersData[] = users.map((user) => {
@@ -240,11 +251,17 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
           last_name: "",
           job_title: "",
         };
+        const widget = widgetMap.get(user.user_id) || {
+          widget_position: Number(),
+          widget_state: Number(),
+        };
         return {
           ...user,
           ...person,
+          ...widget,
         };
       });
+      mergedData.sort((a, b) => a.widget_position - b.widget_position);
       setUsers_data(mergedData);
     } catch (error) {
       console.error("Error fetching users or persons:", error);
@@ -260,7 +277,6 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
         axios.delete(`http://${apiUrl}/def-persons/${id}`),
         axios.delete(`http://${apiUrl}/def-user-credentials/${id}`),
       ]);
-    console.log(res_def_users, res_def_person, res_def_user_credentials);
     if (
       res_def_users.status === 200 &&
       res_def_person.status === 200 &&
@@ -274,7 +290,6 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
   const login = async (email: string, password: string) => {
     setError("");
     setIsLoading(true);
-    // console.log(email, password);
     try {
       await axios
         .post(`http://${apiUrl}/login`, {
@@ -303,7 +318,6 @@ export const SqliteAuthContextProvider = ({ children }: IAuthProviderProps) => {
           return;
         });
     } catch (error) {
-      console.log(error);
       setError("Sorry, Database isn't connected ");
       setIsLoading(false);
     }
