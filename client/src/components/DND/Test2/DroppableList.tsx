@@ -113,25 +113,30 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
       ref={setNodeRef}
       className="bg-gray-300 shadow-lg border border-sky-500 rounded-lg cursor-pointer shadow-slate-400 hover:shadow-sky-500 hover:shadow-lg hover:duration-500"
     >
-      <div className="flex justify-between bg-sky-500 rounded-t-lg py-1 px-2 text-white items-center">
+      <div className="flex justify-between bg-sky-500 rounded-t-lg px-2 text-white items-center">
         <span>{index}</span>
         <div className="flex text-xs duration-700">
           {item.widget_state === 1 ? (
             <Minimize
+              size={30}
               onClick={() => handleChange(index, "widget_state", 0)}
-              className="p-1 cursor-pointer hover:text-gray-600"
+              className="p-1 cursor-pointer hover:text-slate-800"
             />
           ) : (
             <Maximize
+              size={30}
               onClick={() => handleChange(index, "widget_state", 1)}
-              className="p-1 cursor-pointer hover:text-green-600"
+              className="p-1 cursor-pointer hover:text-slate-800"
             />
           )}
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <div className="hover:text-white rounded-md">
-                <Trash className="p-1 cursor-pointer hover:text-red-600" />
+                <Trash
+                  size={30}
+                  className="p-1 cursor-pointer hover:text-red-600"
+                />
               </div>
             </AlertDialogTrigger>
             <AlertDialogContent>

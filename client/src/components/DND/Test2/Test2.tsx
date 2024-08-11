@@ -15,8 +15,9 @@ import DroppableList, { DroppableItem } from "./DroppableList";
 import { IMergeUsersData, useSqliteAuthContext } from "@/Context/SqliteContext";
 import { Info, Plus, SaveAll } from "lucide-react";
 import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
-const id = Math.floor(Math.random() * 10000000000 + 1);
+const id = Math.floor(Math.random() * 100000 + 1);
 const initialLeft: IMergeUsersData[] = [
   {
     user_id: id,
@@ -47,7 +48,7 @@ const App: React.FC = () => {
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const [isChanged, setIsChanged] = useState<boolean>(false);
-  const newId = Math.floor(Math.random() * 10000000000 + 1);
+  const newId = Math.floor(Math.random() * 100000 + 1);
   const newItem = {
     user_id: newId,
     user_name: "",
@@ -150,6 +151,8 @@ const App: React.FC = () => {
           .catch((err) => console.log(err)),
       ]);
       toastify("success", "Successfully saved");
+      setIsChanged(false);
+      getusers();
     } catch (error) {
       // Handle error and log relevant information
       if (axios.isAxiosError(error)) {
@@ -282,7 +285,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // change any value then call
-    const hasChanges = rightItems.some((user, index) => {
+    const hasChanges: boolean = rightItems.some((user, index) => {
       return Object.keys(user).some(
         (key) =>
           user[key as keyof IMergeUsersData] !==
@@ -290,9 +293,8 @@ const App: React.FC = () => {
       );
     });
     setIsChanged(hasChanges);
-    // call if state change
-    getusers();
-  }, [rightItems, handleSaveAll, isChanged]);
+  }, [rightItems]);
+  const { toast } = useToast();
   return (
     <DndContext
       sensors={sensors}
@@ -314,7 +316,7 @@ const App: React.FC = () => {
                 className="cursor-pointer hover:text-sky-700 duration-500"
               />
             ) : (
-              <Plus className="cursor-pointer opacity-20 hover:text-sky-700 duration-500" />
+              <Plus className="cursor-not-allowed opacity-20 hover:text-sky-700 duration-500" />
             )}
             {isChanged && findEmptyInput.length === 0 ? (
               <SaveAll
@@ -323,11 +325,19 @@ const App: React.FC = () => {
               />
             ) : (
               <SaveAll
-                className={`cursor-pointer opacity-20 hover:text-green-700 duration-500}`}
+                className={`cursor-not-allowed opacity-20 hover:text-green-700 duration-500}`}
               />
             )}
 
-            <Info className="cursor-pointer hover:text-orange-700 duration-500" />
+            <Info
+              onClick={() => {
+                toast({
+                  variant: "destructive",
+                  description: "Your message has been sent.",
+                });
+              }}
+              className="cursor-pointer hover:text-orange-700 duration-500"
+            />
           </div>
           <DroppableList
             id="right"
@@ -354,21 +364,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-// Generate a new item and add it to the left side
-// const newId = Math.floor(Math.random() * 1000 + 1);
-// const newItem = {
-//   user_id: newId,
-//   user_name: String(newId),
-//   first_name: "",
-//   middle_name: "",
-//   last_name: "",
-//   job_title: "",
-//   user_type: "",
-//   tenant_id: 1,
-//   email_addresses: "",
-//   created_by: "",
-//   created_on: "",
-//   last_update_by: "",
-//   last_update_on: "",
-// };
-// setLeftItems((prev) => [...prev, newItem]);
