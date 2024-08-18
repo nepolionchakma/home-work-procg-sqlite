@@ -95,7 +95,7 @@ const App: React.FC = () => {
   const handleSaveAll = async () => {
     const id = user_data?.user_id;
     if (findEmptyInput.length === 0 && !isChanged)
-      return toastify("warning", "Please field all fill");
+      return toastify("warning", "Please fill in the empty input");
 
     // Ensure that `rightItems` contains valid data.
     if (!rightItems || !Array.isArray(rightItems)) {
@@ -229,9 +229,8 @@ const App: React.FC = () => {
           return updatedRight;
         });
       }
-    } else toastify("warning", "Please field all fill");
+    } else toastify("warning", " Please fill in the empty input");
   };
-
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
 
@@ -280,21 +279,33 @@ const App: React.FC = () => {
   const handleAddClick = () => {
     if (findEmptyInput.length === 0) {
       setRightItems((prev) => [newItem, ...prev]);
-    } else toastify("warning", "Please field all fill");
+    } else toastify("warning", "Please fill in the empty input");
   };
 
   useEffect(() => {
-    // change any value then call
+    if (!rightItems || !users_data || rightItems.length !== users_data.length) {
+      // console.error("Initial check failed: ", { rightItems, users_data });
+      return;
+    }
+
     const hasChanges: boolean = rightItems.some((user, index) => {
+      if (!user || !users_data[index]) {
+        // console.error("Undefined at index:", index, user, users_data[index]);
+        return false;
+      }
+
       return Object.keys(user).some(
         (key) =>
           user[key as keyof IMergeUsersData] !==
           users_data[index][key as keyof IMergeUsersData]
       );
     });
+
     setIsChanged(hasChanges);
   }, [rightItems]);
+
   const { toast } = useToast();
+  console.log(rightItems);
   return (
     <DndContext
       sensors={sensors}
@@ -309,7 +320,7 @@ const App: React.FC = () => {
           <DraggableList id="left" items={leftItems} />
         </div>
         <div className="w-1/2">
-          <div className="flex gap-2 sticky top-16 px-4">
+          <div className="flex gap-2 sticky top-[52px] x-4">
             {findEmptyInput.length === 0 ? (
               <Plus
                 onClick={handleAddClick}
@@ -333,7 +344,7 @@ const App: React.FC = () => {
               onClick={() => {
                 toast({
                   variant: "destructive",
-                  description: "Your message has been sent.",
+                  description: "This is Info test shadcn toast.",
                 });
               }}
               className="cursor-pointer hover:text-orange-700 duration-500"

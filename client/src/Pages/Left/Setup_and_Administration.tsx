@@ -43,7 +43,7 @@ const Setup_and_Administration = () => {
           <TabsContent value="dnd1">
             <DND1 />
           </TabsContent>
-          <TabsContent value="dnd2">
+          <TabsContent value="dnd2" className="w-[90%] mx-auto">
             <Test2 />
           </TabsContent>
           <TabsContent value="table">

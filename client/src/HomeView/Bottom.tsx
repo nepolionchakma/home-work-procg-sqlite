@@ -6,9 +6,9 @@ import { useNavContext } from "@/Context/NavContext";
 const Bottom = () => {
   const { collapsed } = useNavContext();
   return (
-    <div className=" mt-[3.9%]  ">
+    <div className=" mt-[3.4%]  ">
       <div className="w-full flex gap-2">
-        <div className="fixed">
+        <div className="fixed z-50">
           <SideNav />
         </div>
         <div

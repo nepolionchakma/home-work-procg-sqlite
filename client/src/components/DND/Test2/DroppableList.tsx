@@ -193,7 +193,7 @@ export const DroppableItem: React.FC<DroppableItemProps> = ({
               onChange={(e) => handleChange(index, "last_name", e.target.value)}
             />
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[44.5%]">
             <label htmlFor={`email_addresses-${index}`}>Email</label>
             <input
               className="px-2 rounded"

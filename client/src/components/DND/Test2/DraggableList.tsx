@@ -19,7 +19,7 @@ const DraggableList: React.FC<DraggableListProps> = ({ id, items }) => {
       items={items.map((user) => user.user_id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="p-4 bg-gray-100">
+      <div className="p-4">
         {items.map((item) => (
           <DraggableItem
             key={item.user_id}
