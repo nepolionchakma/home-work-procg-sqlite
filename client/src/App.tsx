@@ -17,6 +17,7 @@ import Profile from "./Pages/Top/Profile";
 import Security from "./Pages/Top/Security";
 import Settings from "./Pages/Top/Settings";
 import AddUser from "./components/AddUser/AddUser";
+import DataSources from "./Pages/Left/DataSources";
 
 const router = createBrowserRouter([
   {
@@ -72,13 +73,21 @@ const router = createBrowserRouter([
         element: <Result_Management />,
       },
       {
-        path: "/tools/setup-and-administration",
-        element: <Setup_and_Administration />,
+        path: "tools",
         children: [
+          {
+            path: "setup-and-administration",
+            element: <Setup_and_Administration />,
+          },
+          {
+            path: "datasources",
+            element: <DataSources />,
+          },
           { path: "add-user", element: <AddUser /> },
           { path: "manage-user", element: <AddUser /> },
         ],
       },
+      // /tools/datasources
       {
         path: "/add-user",
         element: <AddUser />,

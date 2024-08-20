@@ -54,6 +54,12 @@
           "name": "Setup and Administration",
           "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Setup%20and%20Administration.png",
           "link": "/tools/setup-and-administration"
+        },
+        {
+          "id": 1,
+          "name": "Data Sources",
+          "icon": "https://procg-poc-nepo.netlify.app/Left_Nav_Icon/Setup%20and%20Administration.png",
+          "link": "/tools/datasources"
         }
       ]
     }

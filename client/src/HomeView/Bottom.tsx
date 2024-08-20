@@ -12,8 +12,8 @@ const Bottom = () => {
           <SideNav />
         </div>
         <div
-          className={`w-full duration-500   ${
-            collapsed ? "ml-[80px]" : "ml-[300px]"
+          className={`w-full duration-500 ${
+            collapsed ? "ml-[5.5%] w-[94.1%]" : "ml-[21.5%] w-[78%] "
           }`}
         >
           <Breadcurmb />
